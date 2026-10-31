@@ -132,3 +132,20 @@ button.link:hover{color:var(--accent)}
   display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700
 }
 .who-mail{font-size:15px; font-weight:600}
+
+/* ---- 上传 ---- */
+.uploader{margin-top:18px}
+.uploader h3{margin:0 0 6px; font-size:16px}
+.uploader input[type=file]{
+  font-size:14px; color:var(--muted); max-width:100%;
+  padding:10px; border:1px dashed var(--line); border-radius:10px; width:100%; background:var(--bg)
+}
+.files{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px; margin-top:14px}
+.file-row{border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--bg)}
+.file-row img{width:100%; height:96px; object-fit:cover; display:block; cursor:zoom-in}
+.file-name{display:block; padding:10px; font-size:13px; word-break:break-all}
+.file-meta{display:flex; align-items:center; gap:8px; padding:6px 8px; font-size:12px; color:var(--muted); border-top:1px solid var(--line)}
+.file-meta a{color:var(--accent)}
+.file-meta span{margin-left:auto}
+button.link{background:none; border:0; color:var(--muted); font-size:12px; padding:0 2px; cursor:pointer}
+button.link:hover{color:#c0392b}
