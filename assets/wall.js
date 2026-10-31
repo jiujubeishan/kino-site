@@ -25,6 +25,10 @@
         <div class="meta">图片、文档、压缩包都行，单个最大 ${MAX_MB} MB。</div>
         <div class="out" id="wall-msg"></div>
       </section>
+      <div class="wall-search">
+        <input id="wall-search" type="search" placeholder="搜文件名、笔记标题或正文…" autocomplete="off">
+        <span class="meta" id="wall-hit"></span>
+      </div>
       <div class="files wall-grid" id="wall-list"><div class="meta">正在读取…</div></div>
       <section class="card wall-notes-card">
         <h3>大家写的</h3>
@@ -39,6 +43,29 @@
     const msg = document.querySelector('#wall-msg');
     const input = document.querySelector('#wall-file');
     const lb = document.querySelector('#wall-lb');
+    const searchEl = document.querySelector('#wall-search');
+    const hitEl = document.querySelector('#wall-hit');
+    let fileCards = [];
+    let noteCards = [];
+
+    function applyFilter() {
+      const q = (searchEl && searchEl.value || '').trim().toLowerCase();
+      let hit = 0;
+      let total = 0;
+      fileCards.concat(noteCards).forEach((el) => {
+        if (!el.isConnected) return;
+        total++;
+        const hay = (el.dataset.search || '');
+        const on = !q || hay.indexOf(q) !== -1;
+        el.style.display = on ? '' : 'none';
+        if (on) hit++;
+      });
+      if (hitEl) hitEl.textContent = (q && total) ? (hit + ' / ' + total + ' 条') : '';
+    }
+    if (searchEl) {
+      searchEl.addEventListener('input', applyFilter);
+      window.addEventListener('unmount', () => searchEl.removeEventListener('input', applyFilter), { once: true });
+    }
     if (!list || !window.sb) {
       if (list) list.innerHTML = '<div class="meta">Supabase 没加载，等会儿再试。</div>';
       return;
@@ -65,6 +92,7 @@
         return;
       }
       list.innerHTML = '';
+      fileCards = [];
       items.forEach((f) => {
         const path = PREFIX + '/' + f.name;
         const url = storage.getPublicUrl(path).data.publicUrl;
@@ -112,9 +140,12 @@
           if (!list.querySelector('.file-row')) list.innerHTML = '<div class="meta">墙上还什么都没有，你可以当第一个。</div>';
         };
         meta.append(link, info, del);
+        card.dataset.search = (shown + ' ' + when).toLowerCase();
+        fileCards.push(card);
         card.append(meta);
         list.append(card);
       });
+      applyFilter();
     }
 
     input.onchange = async (e) => {
@@ -160,6 +191,7 @@
         return;
       }
       box.innerHTML = '';
+      noteCards = [];
       data.forEach((n) => {
         const art = document.createElement('article');
         art.className = 'my-note';
@@ -180,9 +212,12 @@
           btn.textContent = body.hidden ? '展开' : '收起';
         };
         head.append(btn);
+        art.dataset.search = ((n.title || '') + ' ' + (n.author || '') + ' ' + (n.content || '')).toLowerCase();
+        noteCards.push(art);
         art.append(head, body);
         box.append(art);
       });
+      applyFilter();
     }
 
     draw();
