@@ -140,7 +140,6 @@
         <p class="meta">${esc(data.author || '某人')} · ${when}</p>
         ${MiniMD.render(data.content || '')}
       </article>
-      <p style="margin-top:36px"><a class="back" href="#/">← 回首页</a></p>
     `;
   }
 
