@@ -184,3 +184,13 @@ button.link:hover{color:#c0392b}
   border-radius:10px; background:var(--bg); color:var(--fg); font-size:15px; font-family:inherit
 }
 .wall-search input::-webkit-search-cancel-button{cursor:pointer}
+
+/* 笔记卡片：墙墙 / 笔记 / 首页共用，跟站内文章统一 */
+.note-card{padding:0; display:flex; flex-direction:column}
+.note-card .card-link{display:block; padding:16px 18px 8px; color:inherit}
+.note-card .card-link:hover{text-decoration:none}
+.note-card:hover{transform:translateY(-2px); border-color:var(--accent)}
+.note-card h3{line-height:1.35}
+.note-card p{min-height:20px}
+.note-card .note-actions{padding:0 14px 10px; margin-top:auto; align-items:center}
+.note-card .note-actions .tag{font-size:11px}
