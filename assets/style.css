@@ -194,3 +194,7 @@ button.link:hover{color:#c0392b}
 .note-card p{min-height:20px}
 .note-card .note-actions{padding:0 14px 10px; margin-top:auto; align-items:center}
 .note-card .note-actions .tag{font-size:11px}
+/* 墙墙：文件选择 + 文字贴 */
+.wall-post{margin-top:14px; padding-top:14px; border-top:1px dashed var(--line); display:flex; flex-direction:column; gap:8px}
+.wall-post input[type=text]{width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--fg); font-size:14px}
+.wall-post textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--fg); font-size:14px; font-family:inherit; resize:vertical}
