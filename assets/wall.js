@@ -29,11 +29,10 @@
         <input id="wall-search" type="search" placeholder="搜文件名、笔记标题或正文…" autocomplete="off">
         <span class="meta" id="wall-hit"></span>
       </div>
+      <h2>贴的文件</h2>
       <div class="files wall-grid" id="wall-list"><div class="meta">正在读取…</div></div>
-      <section class="card wall-notes-card">
-        <h3>大家写的</h3>
-        <div id="wall-notes"><div class="meta">正在读…</div></div>
-      </section>
+      <h2>大家写的</h2>
+      <div class="grid" id="wall-notes"><div class="meta">正在读…</div></div>
       <div class="lightbox" id="wall-lb" hidden><img alt=""><div class="lb-tip">点任意处关闭</div></div>
     `;
   }
@@ -190,32 +189,13 @@
         box.innerHTML = '<div class="meta">还没人发。你在「笔记」写完点发布就上墙了。</div>';
         return;
       }
-      box.innerHTML = '';
       noteCards = [];
-      data.forEach((n) => {
-        const art = document.createElement('article');
-        art.className = 'my-note';
-        const head = document.createElement('div');
-        head.className = 'mn-head';
-        head.innerHTML =
-          '<strong>' + esc(n.title || '无标题') + '</strong>' +
-          '<span class="meta">' + esc(n.author || '某人') + ' · ' +
-          new Date(n.created_at).toLocaleDateString('zh-CN') + '</span>';
-        const body = document.createElement('div');
-        body.className = 'note-body mn-body';
-        body.innerHTML = window.MiniMD ? window.MiniMD.render(n.content || '') : esc(n.content || '');
-        const btn = document.createElement('button');
-        btn.className = 'link';
-        btn.textContent = '展开';
-        btn.onclick = () => {
-          body.hidden = !body.hidden;
-          btn.textContent = body.hidden ? '展开' : '收起';
-        };
-        head.append(btn);
-        art.dataset.search = ((n.title || '') + ' ' + (n.author || '') + ' ' + (n.content || '')).toLowerCase();
-        noteCards.push(art);
-        art.append(head, body);
-        box.append(art);
+      box.innerHTML = data.map((n) => window.NoteCard.card(n)).join('');
+      data.forEach((n, i) => {
+        const el = box.children[i];
+        if (!el) return;
+        el.dataset.search = ((n.title || '') + ' ' + (n.author || '') + ' ' + (n.content || '')).toLowerCase();
+        noteCards.push(el);
       });
       applyFilter();
     }
