@@ -52,7 +52,7 @@
     myBox.hidden = false;
 
     const uid = session.user.id;
-    const author = (session.user.email || '').split('@')[0];
+    const author = window.Profile.of(session.user).name;
 
     async function draw() {
       const { data, error } = await window.sb
