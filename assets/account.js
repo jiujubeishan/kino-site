@@ -82,18 +82,57 @@
     return bytes + ' B';
   }
 
+  // 把图片裁成正方形并缩到 size 像素，返回 webp Blob
+  function shrink(file, size) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const side = Math.min(img.width, img.height);
+          const canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
+          canvas.toBlob((blob) => {
+            URL.revokeObjectURL(url);
+            blob ? resolve(blob) : reject(new Error('图片处理失败'));
+          }, 'image/webp', 0.9);
+        } catch (err) {
+          URL.revokeObjectURL(url);
+          reject(err);
+        }
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('这张图打不开')); };
+      img.src = url;
+    });
+  }
+
   function renderLoggedIn(box, session) {
     const u = session.user;
     const since = u.created_at ? new Date(u.created_at).toLocaleDateString('zh-CN') : '—';
+    const me = window.Profile.of(u);
     box.innerHTML = `
       <section class="card auth-card">
         <div class="who">
-          <div class="avatar">${esc((u.email || '?')[0].toUpperCase())}</div>
+          <button class="avatar avatar-btn" id="pf-avatar-btn" title="点一下换头像">${
+            me.avatar
+              ? '<img src="' + esc(me.avatar) + '" alt="">'
+              : esc(window.Profile.initial(u))
+          }</button>
           <div>
+            <div class="who-name" id="me-name">${esc(me.name)}</div>
             <div class="who-mail">${esc(u.email || '')}</div>
             <div class="meta">注册于 ${since}</div>
           </div>
         </div>
+        <div class="profile-edit">
+          <input id="pf-name" type="text" maxlength="20" placeholder="改个名字，发布时用这个名字">
+          <button class="primary" id="pf-save">改名</button>
+          <span class="meta" id="pf-msg"></span>
+        </div>
+        <input type="file" id="pf-avatar" accept="image/*" hidden>
         <div class="tool-row">
           <button id="logout">退出登录</button>
         </div>
@@ -111,6 +150,54 @@
     $('#logout', box).onclick = async () => {
       await window.sb.auth.signOut();
       mount();
+    };
+
+    // —— 改名 ——
+    const pfMsg = $('#pf-msg', box);
+    const nameInput = $('#pf-name', box);
+    nameInput.value = me.name;
+    $('#pf-save', box).onclick = async () => {
+      const name = nameInput.value.trim();
+      if (!name) { pfMsg.textContent = '名字不能空着。'; return; }
+      if (name === me.name) { pfMsg.textContent = '跟现在一样。'; return; }
+      pfMsg.textContent = '保存中…';
+      const { error } = await window.sb.auth.updateUser({ data: { display_name: name } });
+      if (error) { pfMsg.textContent = '改不了：' + error.message; return; }
+      pfMsg.textContent = '改好了，之后发的文章都用这个名字。';
+      me.name = name;
+      const nameEl = document.querySelector('#me-name');
+      if (nameEl) nameEl.textContent = name;
+      // 已经发过的文章也跟着换名字
+      const { error: e2 } = await window.sb.from('notes').update({ author: name }).eq('user_id', u.id);
+      if (e2) pfMsg.textContent = '名字改了，但旧文章没更新：' + e2.message;
+      else pfMsg.textContent = '改好了，旧文章也一起换成新名字了。';
+    };
+
+    // —— 换头像：压缩成 192px 方图，传到 avatars/ ——
+    const avatarBtn = $('#pf-avatar-btn', box);
+    const avatarInput = $('#pf-avatar', box);
+    avatarBtn.onclick = () => avatarInput.click();
+    avatarInput.onchange = async (e) => {
+      const file = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (!file) return;
+      if (!/^image\//.test(file.type)) { pfMsg.textContent = '得是图片。'; return; }
+      pfMsg.textContent = '处理图片…';
+      try {
+        const blob = await shrink(file, 192);
+        pfMsg.textContent = '上传中…';
+        const storage = window.sb.storage.from(BUCKET);
+        const path = 'avatars/' + u.id + '_' + Date.now() + '.webp';
+        const up = await storage.upload(path, blob, { contentType: 'image/webp' });
+        if (up.error) { pfMsg.textContent = '上传失败：' + up.error.message; return; }
+        const url = storage.getPublicUrl(path).data.publicUrl;
+        const { error } = await window.sb.auth.updateUser({ data: { avatar_url: url } });
+        if (error) { pfMsg.textContent = '存不上：' + error.message; return; }
+        pfMsg.textContent = '头像换好了。';
+        avatarBtn.innerHTML = '<img alt="" src="' + url + '">';
+      } catch (err) {
+        pfMsg.textContent = '失败：' + (err.message || String(err));
+      }
     };
 
     const list = $('#up-list', box);
