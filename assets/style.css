@@ -198,3 +198,10 @@ button.link:hover{color:#c0392b}
 .wall-post{margin-top:14px; padding-top:14px; border-top:1px dashed var(--line); display:flex; flex-direction:column; gap:8px}
 .wall-post input[type=text]{width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--fg); font-size:14px}
 .wall-post textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--fg); font-size:14px; font-family:inherit; resize:vertical}
+/* 「我的」：改名与换头像 */
+.avatar-btn{padding:0; border:1px solid var(--line); background:var(--accent-soft); color:var(--accent); cursor:pointer; overflow:hidden; font:inherit; font-size:18px; font-weight:600}
+.avatar-btn img{width:100%; height:100%; object-fit:cover; display:block}
+.avatar-btn:hover{border-color:var(--accent)}
+.who-name{font-size:17px; font-weight:600; margin-bottom:2px}
+.profile-edit{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:14px 0 4px; padding-top:14px; border-top:1px dashed var(--line)}
+.profile-edit input[type=text]{flex:1 1 180px; min-width:140px; padding:8px 12px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--fg); font-size:14px}
