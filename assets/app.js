@@ -140,6 +140,7 @@
         <p class="meta">${esc(data.author || '某人')} · ${when}</p>
         ${MiniMD.render(data.content || '')}
       </article>
+      ${window.Comments ? window.Comments.html(id) : ''}
     `;
   }
 
@@ -188,6 +189,7 @@
     if (parts[0] === 'play') Play.mount();
     if (parts[0] === 'wall') Wall.mount();
     if (parts[0] === 'account') Account.mount();
+    if (parts[0] === 'u' && window.Comments) Comments.mount();
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
     document.title = ({
       '': 'Kino 的自留地',
