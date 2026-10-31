@@ -160,3 +160,19 @@ button.link:hover{color:#c0392b}
 .lightbox[hidden]{display:none}
 .lightbox img{max-width:92vw; max-height:86vh; border-radius:8px}
 .lb-tip{position:absolute; bottom:26px; color:#fff; opacity:.6; font-size:13px}
+
+/* ---- 我的笔记 ---- */
+.note-editor{margin-bottom:24px}
+.ne-form{display:flex; flex-direction:column; gap:10px; margin-top:10px}
+.ne-form input,.ne-form textarea{
+  width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
+  background:var(--bg); color:var(--fg); font-size:15px; font-family:inherit
+}
+.ne-form textarea{resize:vertical; line-height:1.7}
+.my-note{border-top:1px solid var(--line); padding:14px 0}
+.my-note:first-of-type{border-top:0}
+.mn-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+.mn-head .meta{margin-left:auto}
+.mn-body{margin-top:10px}
+.mn-tools{gap:14px; margin-top:6px}
+.wall-notes-card{margin-top:20px}
