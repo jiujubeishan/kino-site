@@ -26,6 +26,10 @@
         <div class="out" id="wall-msg"></div>
       </section>
       <div class="files wall-grid" id="wall-list"><div class="meta">正在读取…</div></div>
+      <section class="card wall-notes-card">
+        <h3>大家写的</h3>
+        <div id="wall-notes"><div class="meta">正在读…</div></div>
+      </section>
       <div class="lightbox" id="wall-lb" hidden><img alt=""><div class="lb-tip">点任意处关闭</div></div>
     `;
   }
@@ -138,7 +142,51 @@
       draw();
     };
 
+    async function drawNotes() {
+      const box = document.querySelector('#wall-notes');
+      if (!box) return;
+      const { data, error } = await window.sb
+        .from('notes')
+        .select('id,title,content,author,created_at')
+        .eq('published', true)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (error) {
+        box.innerHTML = '<div class="meta">读不到笔记：' + esc(error.message) + '</div>';
+        return;
+      }
+      if (!data || !data.length) {
+        box.innerHTML = '<div class="meta">还没人发。你在「笔记」写完点发布就上墙了。</div>';
+        return;
+      }
+      box.innerHTML = '';
+      data.forEach((n) => {
+        const art = document.createElement('article');
+        art.className = 'my-note';
+        const head = document.createElement('div');
+        head.className = 'mn-head';
+        head.innerHTML =
+          '<strong>' + esc(n.title || '无标题') + '</strong>' +
+          '<span class="meta">' + esc(n.author || '某人') + ' · ' +
+          new Date(n.created_at).toLocaleDateString('zh-CN') + '</span>';
+        const body = document.createElement('div');
+        body.className = 'note-body mn-body';
+        body.innerHTML = window.MiniMD ? window.MiniMD.render(n.content || '') : esc(n.content || '');
+        const btn = document.createElement('button');
+        btn.className = 'link';
+        btn.textContent = '展开';
+        btn.onclick = () => {
+          body.hidden = !body.hidden;
+          btn.textContent = body.hidden ? '展开' : '收起';
+        };
+        head.append(btn);
+        art.append(head, body);
+        box.append(art);
+      });
+    }
+
     draw();
+    drawNotes();
   }
 
   window.Wall = { html, mount };
