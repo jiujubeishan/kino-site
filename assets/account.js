@@ -73,6 +73,15 @@
     };
   }
 
+  const BUCKET = 'uploads';
+  const MAX_MB = 50;
+
+  function humanSize(bytes) {
+    if (bytes > 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
+    if (bytes > 1024) return Math.round(bytes / 1024) + ' KB';
+    return bytes + ' B';
+  }
+
   function renderLoggedIn(box, session) {
     const u = session.user;
     const since = u.created_at ? new Date(u.created_at).toLocaleDateString('zh-CN') : '—';
@@ -88,13 +97,92 @@
         <div class="tool-row">
           <button id="logout">退出登录</button>
         </div>
-        <div class="out" id="auth-msg"></div>
+      </section>
+      <section class="card auth-card uploader">
+        <h3>我的上传</h3>
+        <div class="meta">图片或文件都行，单个最大 ${MAX_MB} MB，存在云端，换设备也能看到。</div>
+        <div class="tool-row">
+          <input type="file" id="up-file" multiple>
+        </div>
+        <div class="out" id="up-msg"></div>
+        <div class="files" id="up-list"><div class="meta">正在读取…</div></div>
       </section>
     `;
     $('#logout', box).onclick = async () => {
       await window.sb.auth.signOut();
       mount();
     };
+
+    const list = $('#up-list', box);
+    const msg = $('#up-msg', box);
+
+    const storage = window.sb.storage.from(BUCKET);
+
+    const publicUrl = (path) => storage.getPublicUrl(path).data.publicUrl;
+
+    async function draw() {
+      const { data, error } = await storage.list(u.id, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+      if (error) {
+        list.innerHTML = '<div class="meta">读不到列表：' + esc(error.message) + '（桶建了吗？）</div>';
+        return;
+      }
+      const items = (data || []).filter((f) => f.name && f.id);
+      if (!items.length) {
+        list.innerHTML = '<div class="meta">还没传东西。</div>';
+        return;
+      }
+      list.innerHTML = '';
+      items.forEach((f) => {
+        const path = u.id + '/' + f.name;
+        const url = publicUrl(path);
+        const row = document.createElement('div');
+        row.className = 'file-row';
+        const isImg = /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(f.name);
+        const shown = f.name.replace(/^\d+_/, '');
+        if (isImg) {
+          const img = document.createElement('img');
+          img.src = url;
+          img.loading = 'lazy';
+          img.onclick = () => window.open(url, '_blank');
+          row.append(img);
+        } else {
+          row.append(Object.assign(document.createElement('span'), { className: 'file-name', textContent: '📄 ' + shown }));
+        }
+        const meta = document.createElement('div');
+        meta.className = 'file-meta';
+        meta.innerHTML = `<a href="${url}" target="_blank" rel="noopener">${esc(isImg ? shown : '打开')}</a>` +
+          `<span>${f.metadata ? humanSize(f.metadata.size || 0) : ''}</span>`;
+        const del = document.createElement('button');
+        del.className = 'link';
+        del.textContent = '删';
+        del.onclick = async () => {
+          const { error: e2 } = await storage.remove([path]);
+          if (e2) { msg.textContent = '删除失败：' + e2.message; return; }
+          draw();
+        };
+        meta.append(del);
+        row.append(meta);
+        list.append(row);
+      });
+    }
+
+    $('#up-file', box).onchange = async (e) => {
+      const files = [...e.target.files];
+      if (!files.length) return;
+      msg.textContent = '上传中…';
+      for (const file of files) {
+        if (file.size > MAX_MB * 1048576) { msg.textContent = file.name + ' 太大了，跳过。'; continue; }
+        const safe = file.name.replace(/[^\w.\-]+/g, '_');
+        const path = u.id + '/' + Date.now() + '_' + safe;
+        const { error } = await storage.upload(path, file, { contentType: file.type || undefined });
+        if (error) { msg.textContent = '上传失败：' + error.message; break; }
+      }
+      msg.textContent = '完成。';
+      e.target.value = '';
+      draw();
+    };
+
+    draw();
   }
 
   async function mount() {
