@@ -22,9 +22,9 @@
           </div>
         </div>
       </section>
-      <section class="card" id="my-notes" hidden>
-        <h3>我写的</h3>
-        <div id="mn-list"><div class="meta">加载中…</div></div>
+      <section id="my-notes" hidden>
+        <h2>我写的</h2>
+        <div class="grid" id="mn-list"><div class="meta">加载中…</div></div>
       </section>
     `;
   }
@@ -67,54 +67,34 @@
         listBox.innerHTML = '<div class="meta">还没写过。</div>';
         return;
       }
-      listBox.innerHTML = '';
-      data.forEach((n) => {
-        const row = document.createElement('article');
-        row.className = 'my-note';
-        const head = document.createElement('div');
-        head.className = 'mn-head';
-        head.innerHTML =
-          '<strong>' + esc(n.title || '无标题') + '</strong>' +
-          '<span class="meta">' + fmtDate(n.created_at) + (n.published ? ' · 已发布' : '') + '</span>';
-        const body = document.createElement('div');
-        body.className = 'note-body mn-body';
-        body.innerHTML = window.MiniMD ? window.MiniMD.render(n.content || '') : esc(n.content || '');
-        body.hidden = true;
-        const tools = document.createElement('div');
-        tools.className = 'tool-row mn-tools';
+      listBox.innerHTML = data.map((n) => window.NoteCard.card(n, {
+        actions:
+          '<button class="link" data-act="pub" data-id="' + n.id + '">' +
+          (n.published ? '撤回发布' : '发布到墙墙') + '</button>' +
+          (n.published ? '<span class="tag">已发布</span>' : '') +
+          '<button class="link" data-act="del" data-id="' + n.id + '">删</button>'
+      })).join('');
 
-        const toggle = document.createElement('button');
-        toggle.className = 'link';
-        toggle.textContent = '展开';
-        toggle.onclick = () => {
-          body.hidden = !body.hidden;
-          toggle.textContent = body.hidden ? '展开' : '收起';
-        };
-
-        const pub = document.createElement('button');
-        pub.className = 'link';
-        pub.textContent = n.published ? '撤回发布' : '发布到墙墙';
-        pub.onclick = async () => {
-          const { error } = await window.sb.from(TABLE).update({ published: !n.published, updated_at: new Date().toISOString() }).eq('id', n.id);
+      listBox.onclick = async (e) => {
+        const btn = e.target.closest('button[data-act]');
+        if (!btn) return;
+        const id = btn.dataset.id;
+        const note = data.find((x) => x.id === id);
+        if (!note) return;
+        e.preventDefault();
+        if (btn.dataset.act === 'pub') {
+          const { error } = await window.sb.from(TABLE)
+            .update({ published: !note.published, updated_at: new Date().toISOString() })
+            .eq('id', id);
           if (error) { msg.textContent = '操作失败：' + error.message; return; }
-          msg.textContent = n.published ? '已撤回。' : '发布好了，去墙墙看看。';
+          msg.textContent = note.published ? '已撤回。' : '发布好了，首页和墙墙都能看到。';
           draw();
-        };
-
-        const del = document.createElement('button');
-        del.className = 'link';
-        del.textContent = '删';
-        del.onclick = async () => {
-          const { error } = await window.sb.from(TABLE).delete().eq('id', n.id);
+        } else if (btn.dataset.act === 'del') {
+          const { error } = await window.sb.from(TABLE).delete().eq('id', id);
           if (error) { msg.textContent = '删除失败：' + error.message; return; }
           draw();
-        };
-
-        tools.append(toggle, pub, del);
-        head.append(tools);
-        row.append(head, body);
-        listBox.append(row);
-      });
+        }
+      };
     }
 
     document.querySelector('#ne-save').onclick = async () => {
