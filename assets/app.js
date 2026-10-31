@@ -38,7 +38,9 @@
   function notesIndex() {
     return `
       <h1>笔记</h1>
-      <p class="lead">一共 ${NOTES.length} 篇，按时间倒序。</p>
+      <p class="lead">自己写的存云端，下面这几篇是写死在站里的。</p>
+      ${typeof MyNotes !== 'undefined' ? MyNotes.html() : ''}
+      <h2>站内文章</h2>
       <div class="grid">
         ${NOTES.slice().sort((a, b) => b.date.localeCompare(a.date)).map((n) => `
           <a class="card" href="#/note/${n.slug}">
@@ -106,6 +108,7 @@
 
     clear(app);
     app.innerHTML = html;
+    if (parts[0] === 'notes' && typeof MyNotes !== 'undefined') MyNotes.mount();
     if (parts[0] === 'tools') mountTools();
     if (parts[0] === 'play') Play.mount();
     if (parts[0] === 'wall') Wall.mount();
