@@ -16,8 +16,8 @@
 
   function html() {
     return `
-      <h1>单选</h1>
-      <p class="lead">一块公开的墙。谁都能贴，谁都能看，传上去就收不回来了（别贴私密东西）。</p>
+      <h1>墙墙</h1>
+      <p class="lead">一块公开的墙。谁都能贴，谁都能看。贴错了可以删（登录后）。</p>
       <section class="card wall-upload">
         <div class="tool-row">
           <input type="file" id="wall-file" multiple>
@@ -87,9 +87,27 @@
         const meta = document.createElement('div');
         meta.className = 'file-meta';
         const when = f.created_at ? new Date(f.created_at).toLocaleDateString('zh-CN') : '';
-        meta.innerHTML =
-          '<a href="' + url + '" target="_blank" rel="noopener">' + (isImg ? esc(shown) : '下载') + '</a>' +
-          '<span>' + (f.metadata ? humanSize(f.metadata.size) : '') + ' ' + when + '</span>';
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = isImg ? shown : '下载';
+        const info = document.createElement('span');
+        info.textContent = (f.metadata ? humanSize(f.metadata.size) : '') + ' ' + when;
+        const del = document.createElement('button');
+        del.className = 'link';
+        del.textContent = '删';
+        del.title = '从墙上移除';
+        del.onclick = async () => {
+          const { data: s } = await window.sb.auth.getSession();
+          if (!s || !s.session) { msg.textContent = '登录后才能删。先去「我的」登一下。'; return; }
+          del.disabled = true;
+          const { error } = await storage.remove([path]);
+          if (error) { msg.textContent = '删除失败：' + error.message; del.disabled = false; return; }
+          card.remove();
+          if (!list.querySelector('.file-row')) list.innerHTML = '<div class="meta">墙上还什么都没有，你可以当第一个。</div>';
+        };
+        meta.append(link, info, del);
         card.append(meta);
         list.append(card);
       });
