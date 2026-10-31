@@ -10,18 +10,71 @@
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const clear = (node) => { node.dispatchEvent(new Event('unmount')); node.innerHTML = ''; };
 
+  function card(item) {
+    return `
+      <a class="card" href="${item.href}">
+        <h3>${esc(item.title)}</h3>
+        <div class="meta">${esc(item.date)} · ${esc(item.tag)}</div>
+        <p>${esc(item.desc || '')}</p>
+      </a>`;
+  }
+
+  const staticItems = () => NOTES.map((n) => ({
+    title: n.title,
+    date: n.date,
+    tag: n.tags.join(' / '),
+    desc: n.desc || '',
+    href: '#/note/' + n.slug
+  }));
+
+  function plain(text, max) {
+    const s = String(text || '')
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/[#>*_`~\-]+/g, ' ')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return s.length > max ? s.slice(0, max) + '…' : s;
+  }
+
+  async function mountHome() {
+    const grid = document.querySelector('#home-grid');
+    if (!grid) return;
+    let items = staticItems();
+    if (window.sb) {
+      try {
+        const { data } = await window.sb
+          .from('notes')
+          .select('id,title,content,created_at')
+          .eq('published', true)
+          .order('created_at', { ascending: false })
+          .limit(20);
+        (data || []).forEach((n) => {
+          const d = new Date(n.created_at);
+          items.push({
+            title: n.title || '无标题',
+            date: d.toISOString().slice(0, 10),
+            tag: '笔记',
+            desc: plain(n.content, 60),
+            href: '#/u/' + n.id,
+            ts: d.getTime()
+          });
+        });
+      } catch (e) { /* 没配置也不影响静态文章 */ }
+    }
+    items = items.map((it) => ({ ...it, ts: it.ts || new Date(it.date).getTime() }))
+      .sort((a, b) => b.ts - a.ts)
+      .slice(0, 6);
+    grid.innerHTML = items.map(card).join('');
+  }
+
   function home() {
     return `
       <h1>你好，我是 Kino</h1>
       <p class="lead">写点东西、放点小工具的自留地。慢慢长，不着急。</p>
       <h2>最近写的</h2>
-      <div class="grid">
-        ${NOTES.slice(0, 3).map((n) => `
-          <a class="card" href="#/note/${n.slug}">
-            <h3>${esc(n.title)}</h3>
-            <div class="meta">${n.date} · ${n.tags.join(' / ')}</div>
-            <p>${esc(n.desc || '')}</p>
-          </a>`).join('')}
+      <div class="grid" id="home-grid">
+        ${staticItems().slice(0, 3).map(card).join('')}
       </div>
       <h2>顺手能用的</h2>
       <div class="grid">
@@ -70,6 +123,27 @@
     `;
   }
 
+  async function userNote(id) {
+    const back = '<a class="back" href="#/">← 回首页</a>';
+    if (!window.sb || !id) return back + '<h1>404</h1><p>这篇不存在。</p>';
+    const { data, error } = await window.sb
+      .from('notes')
+      .select('id,title,content,author,created_at')
+      .eq('id', id)
+      .maybeSingle();
+    if (error || !data) return back + '<h1>404</h1><p>找不到这篇，可能被撤回或删掉了。</p>';
+    const when = new Date(data.created_at).toLocaleDateString('zh-CN');
+    return `
+      ${back}
+      <article class="note-body">
+        <h1>${esc(data.title || '无标题')}</h1>
+        <p class="meta">${esc(data.author || '某人')} · ${when}</p>
+        ${MiniMD.render(data.content || '')}
+      </article>
+      <p style="margin-top:36px"><a class="back" href="#/">← 回首页</a></p>
+    `;
+  }
+
   function toolsPage() {
     return `
       <h1>工具</h1>
@@ -103,11 +177,13 @@
     else if (parts[0] === 'tools') html = toolsPage();
     else if (parts[0] === 'play') html = Play.html();
     else if (parts[0] === 'wall') html = Wall.html();
+    else if (parts[0] === 'u') html = await userNote(parts[1] || '');
     else if (parts[0] === 'account') html = Account.html();
     else html = home();
 
     clear(app);
     app.innerHTML = html;
+    if (!parts.length) mountHome();
     if (parts[0] === 'notes' && typeof MyNotes !== 'undefined') MyNotes.mount();
     if (parts[0] === 'tools') mountTools();
     if (parts[0] === 'play') Play.mount();
@@ -120,7 +196,8 @@
       tools: '工具 · Kino 的自留地',
       play: '玩玩 · Kino 的自留地',
       wall: '墙墙 · Kino 的自留地',
-      account: '我的 · Kino 的自留地'
+      account: '我的 · Kino 的自留地',
+      u: '笔记 · Kino 的自留地'
     })[parts[0] || ''] || (NOTE_TITLE(parts[1]) + ' · Kino 的自留地');
   }
 
