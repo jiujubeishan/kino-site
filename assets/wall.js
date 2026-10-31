@@ -198,7 +198,7 @@
         if (!session) { postMsg.textContent = '登录之后才能贴。先去「我的」登一下。'; return; }
         postBtn.disabled = true;
         postMsg.textContent = '发送中…';
-        const author = (session.user.email || '').split('@')[0];
+        const author = window.Profile.of(session.user).name;
         const { error } = await window.sb.from('notes').insert({
           user_id: session.user.id,
           author,
