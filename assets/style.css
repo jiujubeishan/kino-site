@@ -113,3 +113,22 @@ button.link:hover{color:var(--accent)}
 }
 .lightbox[hidden]{display:none}
 .lightbox img{max-width:min(90vw,760px); max-height:86vh; border-radius:12px; background:#fff}
+
+/* ---- 账号 ---- */
+.auth-card{max-width:460px}
+.auth-tabs{display:flex; gap:8px; margin-bottom:16px}
+.tab{padding:6px 16px; border-radius:999px}
+.tab.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft)}
+.auth-form{display:flex; flex-direction:column; gap:12px}
+.auth-form label{display:flex; flex-direction:column; gap:6px; font-size:14px; color:var(--muted)}
+.auth-form input{
+  padding:9px 11px; border:1px solid var(--line); border-radius:9px;
+  background:var(--bg); color:var(--fg); font-size:15px
+}
+.auth-form button{align-self:flex-start; margin-top:4px}
+.who{display:flex; gap:12px; align-items:center; margin-bottom:18px}
+.avatar{
+  width:46px; height:46px; border-radius:50%; background:var(--accent-soft); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700
+}
+.who-mail{font-size:15px; font-weight:600}

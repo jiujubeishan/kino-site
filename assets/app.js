@@ -100,18 +100,21 @@
     else if (parts[0] === 'note') html = await note(parts[1] || '');
     else if (parts[0] === 'tools') html = toolsPage();
     else if (parts[0] === 'play') html = Play.html();
+    else if (parts[0] === 'account') html = Account.html();
     else html = home();
 
     clear(app);
     app.innerHTML = html;
     if (parts[0] === 'tools') mountTools();
     if (parts[0] === 'play') Play.mount();
+    if (parts[0] === 'account') Account.mount();
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
     document.title = ({
       '': 'Kino 的自留地',
       notes: '笔记 · Kino 的自留地',
       tools: '工具 · Kino 的自留地',
-      play: '玩玩 · Kino 的自留地'
+      play: '玩玩 · Kino 的自留地',
+      account: '我的 · Kino 的自留地'
     })[parts[0] || ''] || (NOTE_TITLE(parts[1]) + ' · Kino 的自留地');
   }
 
