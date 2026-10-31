@@ -176,3 +176,11 @@ button.link:hover{color:#c0392b}
 .mn-body{margin-top:10px}
 .mn-tools{gap:14px; margin-top:6px}
 .wall-notes-card{margin-top:20px}
+
+/* ---- 墙墙搜索 ---- */
+.wall-search{display:flex; align-items:center; gap:12px; margin:0 0 16px}
+.wall-search input{
+  flex:1; max-width:420px; padding:9px 13px; border:1px solid var(--line);
+  border-radius:10px; background:var(--bg); color:var(--fg); font-size:15px; font-family:inherit
+}
+.wall-search input::-webkit-search-cancel-button{cursor:pointer}
