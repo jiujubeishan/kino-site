@@ -116,7 +116,7 @@
       notes: '笔记 · Kino 的自留地',
       tools: '工具 · Kino 的自留地',
       play: '玩玩 · Kino 的自留地',
-      wall: '单选 · Kino 的自留地',
+      wall: '墙墙 · Kino 的自留地',
       account: '我的 · Kino 的自留地'
     })[parts[0] || ''] || (NOTE_TITLE(parts[1]) + ' · Kino 的自留地');
   }
