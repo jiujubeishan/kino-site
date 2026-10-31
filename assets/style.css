@@ -205,3 +205,14 @@ button.link:hover{color:#c0392b}
 .who-name{font-size:17px; font-weight:600; margin-bottom:2px}
 .profile-edit{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:14px 0 4px; padding-top:14px; border-top:1px dashed var(--line)}
 .profile-edit input[type=text]{flex:1 1 180px; min-width:140px; padding:8px 12px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--fg); font-size:14px}
+/* 评论区 */
+.comments{margin-top:44px; padding-top:22px; border-top:1px dashed var(--line)}
+.comments h2{font-size:19px; margin:0 0 14px}
+.cm-item{padding:10px 0; border-bottom:1px solid var(--line)}
+.cm-item:last-child{border-bottom:0}
+.cm-head{display:flex; gap:10px; align-items:baseline; flex-wrap:wrap}
+.cm-head strong{font-size:14.5px}
+.cm-head .meta{font-size:12.5px}
+.cm-body{margin-top:4px; font-size:15px; line-height:1.7; white-space:pre-wrap}
+.cm-form{margin-top:16px; display:flex; flex-direction:column; gap:8px}
+.cm-form textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--fg); font-size:14px; font-family:inherit; resize:vertical}
