@@ -132,7 +132,7 @@
     if (!window.sb || !id) return back + '<h1>404</h1><p>这篇不存在。</p>';
     const { data, error } = await window.sb
       .from('notes')
-      .select('id,title,content,author,created_at')
+      .select('id,title,content,author,user_id,created_at')
       .eq('id', id)
       .maybeSingle();
     if (error || !data) return back + '<h1>404</h1><p>找不到这篇，可能被撤回或删掉了。</p>';
@@ -141,7 +141,7 @@
       ${back}
       <article class="note-body">
         <h1>${esc(data.title || '无标题')}</h1>
-        <p class="meta">${esc(data.author || '某人')} · ${when}</p>
+        <p class="meta">${data.user_id ? `<a href="#/user/${esc(data.user_id)}">${esc(data.author || '某人')}</a>` : esc(data.author || '某人')} · ${when}</p>
         ${MiniMD.render(data.content || '')}
       </article>
       ${window.Comments ? window.Comments.html(id) : ''}
