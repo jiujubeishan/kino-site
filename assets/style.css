@@ -237,3 +237,30 @@ button.link:hover{color:#c0392b}
 .reaction-pad.waiting{background:var(--line); color:var(--muted); cursor:default}
 .reaction-pad.ready{background:#41ba41; border-color:#41ba41; color:#fff; font-size:22px}
 .reaction-pad.ready:hover{transform:none}
+/* 用户主页 / 私信 / 图集 */
+.user-hero{display:flex; gap:18px; align-items:flex-start; margin:6px 0 26px}
+.avatar-lg,.avatar-sm{width:72px; height:72px; font-size:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; overflow:hidden; flex:0 0 auto}
+.avatar-sm{width:40px; height:40px; font-size:16px}
+.avatar-lg img,.avatar-sm img{width:100%; height:100%; object-fit:cover; display:block}
+.user-info h1{margin:0 0 4px; font-size:26px}
+.user-info .meta{margin-bottom:10px}
+.gallery{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px; margin-bottom:26px}
+.gallery-cell{position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--card); aspect-ratio:1}
+.gallery-cell img{width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in}
+.gallery-cell .link{position:absolute; right:6px; bottom:6px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:2px 8px}
+
+.dm-head{display:flex; align-items:center; gap:12px; margin:8px 0 16px}
+.dm-head h1{margin:0; font-size:22px}
+.dm-list{display:flex; flex-direction:column; gap:10px; max-height:56vh; min-height:220px; overflow:auto; padding:14px; border:1px solid var(--line); border-radius:14px; background:var(--bg); margin-bottom:14px}
+.dm-item{display:flex; flex-direction:column; align-items:flex-start; gap:2px; max-width:78%}
+.dm-item.mine{align-self:flex-end; align-items:flex-end}
+.dm-bubble{padding:8px 12px; border-radius:12px; background:var(--card); border:1px solid var(--line); overflow-wrap:anywhere}
+.dm-item.mine .dm-bubble{background:var(--accent-soft); border-color:transparent}
+.dm-bubble p{margin:0}
+.dm-bubble img{max-width:200px; border-radius:8px; display:block; margin-top:4px}
+.dm-peers{display:flex; flex-direction:column; gap:10px}
+.dm-peer{display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--line); border-radius:12px; color:inherit; text-decoration:none; background:var(--card)}
+.dm-peer:hover{border-color:var(--accent)}
+.dm-peer-main{flex:1; min-width:0}
+.dm-peer-main .meta{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pic-tip{margin-left:6px}
