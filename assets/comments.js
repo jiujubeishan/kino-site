@@ -14,6 +14,7 @@
           <textarea id="cm-text" rows="3" placeholder="说两句……"></textarea>
           <div class="tool-row">
             <button class="primary" id="cm-send">发评论</button>
+            <button type="button" id="cm-emoji">😀 表情</button>
             <span class="meta" id="cm-msg"></span>
           </div>
         </div>
@@ -38,6 +39,8 @@
       sendBtn.disabled = true;
     }
     const myId = session ? session.user.id : '';
+
+    if (window.EmojiPicker) window.EmojiPicker.attach(document.querySelector('#cm-emoji'), textEl);
 
     async function draw() {
       const { data, error } = await storage.list(dir(noteId), {
@@ -72,7 +75,7 @@
             <span class="meta">${esc(new Date(c.at).toLocaleString('zh-CN'))}</span>
             ${myId && c.uid === myId ? '<button class="link" data-path="' + esc(c.path) + '">删</button>' : ''}
           </div>
-          <div class="cm-body">${esc(c.content)}</div>
+          <div class="cm-body">${window.MiniMD ? window.MiniMD.render(c.content) : esc(c.content)}</div>
         </article>`).join('') || '<div class="meta">还没有人说话。当第一个。</div>';
     }
 
