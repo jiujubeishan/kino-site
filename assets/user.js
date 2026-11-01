@@ -43,7 +43,15 @@
     if (pt) pt.textContent = OWN + '图片';
     if (nt) nt.textContent = OWN + '文章';
 
-    const info = await window.Social.getProfile(uid);
+    let info = await window.Social.getProfile(uid);
+    if (isSelf) {
+      const mine = window.Profile.of(me);
+      const stale = !info || info.name === '某人' || info.name !== mine.name || (mine.avatar && info.avatar !== mine.avatar);
+      if (stale) {
+        info = { name: mine.name, avatar: mine.avatar || (info && info.avatar) || '' };
+        window.Social.saveProfile(me);
+      }
+    }
     nameEl.textContent = info.name || '某人';
     if (uid === OWNER_ID && !nameEl.parentNode.querySelector('.owner-badge')) {
       const badge = document.createElement('span');
