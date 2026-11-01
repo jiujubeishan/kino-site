@@ -289,3 +289,5 @@ button.link:hover{color:#c0392b}
 .kbd-key.on{background:#41ba41; border-color:#41ba41; color:#fff; transform:translateY(1px)}
 .key-log{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; min-height:22px}
 @media (max-width:560px){ .tool.wide{grid-column:span 1} .kbd-key{height:30px; font-size:11px} }
+/* 站长标签 */
+.owner-badge{display:inline-block; margin-left:8px; padding:1px 8px; border-radius:999px; background:var(--accent); color:#fff; font-size:12px; line-height:18px; vertical-align:middle; font-weight:500}
