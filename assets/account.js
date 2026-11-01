@@ -113,6 +113,7 @@
     const u = session.user;
     const since = u.created_at ? new Date(u.created_at).toLocaleDateString('zh-CN') : '—';
     const me = window.Profile.of(u);
+    if (window.Social) window.Social.saveProfile(u);
     box.innerHTML = `
       <section class="card auth-card">
         <div class="who">
@@ -134,6 +135,7 @@
         </div>
         <input type="file" id="pf-avatar" accept="image/*" hidden>
         <div class="tool-row">
+          <a class="link" href="#/user/${esc(u.id)}">我的主页 →</a>
           <button id="logout">退出登录</button>
         </div>
       </section>
@@ -169,6 +171,8 @@
       if (nameEl) nameEl.textContent = name;
       // 已经发过的文章也跟着换名字
       const { error: e2 } = await window.sb.from('notes').update({ author: name }).eq('user_id', u.id);
+      const { data: gu1 } = await window.sb.auth.getUser();
+      if (window.Social && gu1 && gu1.user) window.Social.saveProfile(gu1.user);
       if (e2) pfMsg.textContent = '名字改了，但旧文章没更新：' + e2.message;
       else pfMsg.textContent = '改好了，旧文章也一起换成新名字了。';
     };
@@ -193,6 +197,8 @@
         const url = storage.getPublicUrl(path).data.publicUrl;
         const { error } = await window.sb.auth.updateUser({ data: { avatar_url: url } });
         if (error) { pfMsg.textContent = '存不上：' + error.message; return; }
+        const { data: gu2 } = await window.sb.auth.getUser();
+        if (window.Social && gu2 && gu2.user) window.Social.saveProfile(gu2.user);
         pfMsg.textContent = '头像换好了。';
         avatarBtn.innerHTML = '<img alt="" src="' + url + '">';
       } catch (err) {
