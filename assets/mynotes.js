@@ -11,7 +11,12 @@
 
   function html() {
     return `
+      <section id="my-notes" hidden>
+        <h2>我写的</h2>
+        <div class="grid" id="mn-list"><div class="meta">加载中…</div></div>
+      </section>
       <section class="card note-editor" id="note-editor">
+        <h2>写点新的</h2>
         <div class="meta" id="ne-hint">正在检查登录状态…</div>
         <div class="ne-form" hidden>
           <input id="ne-title" type="text" placeholder="标题（随便写）" maxlength="120">
@@ -22,10 +27,6 @@
             <span class="meta" id="ne-msg"></span>
           </div>
         </div>
-      </section>
-      <section id="my-notes" hidden>
-        <h2>我写的</h2>
-        <div class="grid" id="mn-list"><div class="meta">加载中…</div></div>
       </section>
     `;
   }
