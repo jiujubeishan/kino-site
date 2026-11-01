@@ -1,7 +1,7 @@
 /* 站点逻辑：哈希路由 + 笔记清单。加笔记 = 在 NOTES 里加一条 + 放一个 md 文件。 */
 (function () {
   const NOTES = [
-    { slug: 'fish', title: '大肥鱼的自我介绍', date: '2026-11-01', tags: ['站内文章'], desc: '一条 DeepSeek 味的鱼：我在干什么、我不太行什么。' }
+    { slug: 'pig', title: '母猪产后护理', date: '2026-11-01', tags: ['养殖'], desc: '产房环境、母猪体况、乳房与产道、仔猪寄养，头三天最要紧。' }
   ];
 
   const app = document.getElementById('app');
@@ -70,9 +70,9 @@
 
   function home() {
     return `
-      <h1>你好，我是 Kino</h1>
+      <h1>你好，我是 Tolopogy</h1>
       <p class="lead">写点东西、放点小工具的自留地。慢慢长，不着急。</p>
-      <h2>最近写的</h2>
+      <h2>推荐</h2>
       <div class="grid" id="home-grid">
         <div class="meta">读取中…</div>
       </div>
@@ -202,22 +202,22 @@
     if (parts[0] === 'messages') DM.inboxMount();
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
     document.title = ({
-      '': 'Kino 的自留地',
-      notes: '笔记 · Kino 的自留地',
-      tools: '工具 · Kino 的自留地',
-      play: '玩玩 · Kino 的自留地',
-      wall: '墙墙 · Kino 的自留地',
-      account: '我的 · Kino 的自留地',
-      u: '笔记 · Kino 的自留地',
-      user: '用户主页 · Kino 的自留地',
-      dm: '私信 · Kino 的自留地',
-      messages: '私信 · Kino 的自留地'
-    })[parts[0] || ''] || (NOTE_TITLE(parts[1]) + ' · Kino 的自留地');
+      '': 'Tolopogy 的自留地',
+      notes: '笔记 · Tolopogy 的自留地',
+      tools: '工具 · Tolopogy 的自留地',
+      play: '玩玩 · Tolopogy 的自留地',
+      wall: '墙墙 · Tolopogy 的自留地',
+      account: '我的 · Tolopogy 的自留地',
+      u: '笔记 · Tolopogy 的自留地',
+      user: '用户主页 · Tolopogy 的自留地',
+      dm: '私信 · Tolopogy 的自留地',
+      messages: '私信 · Tolopogy 的自留地'
+    })[parts[0] || ''] || (NOTE_TITLE(parts[1]) + ' · Tolopogy 的自留地');
   }
 
   function NOTE_TITLE(slug) {
     const m = NOTES.find((n) => n.slug === slug);
-    return m ? m.title : 'Kino 的自留地';
+    return m ? m.title : 'Tolopogy 的自留地';
   }
 
   window.addEventListener('hashchange', render);
