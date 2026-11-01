@@ -29,26 +29,32 @@
   }
 
   // —— 资料卡（改名/换头像时同步一份公开的） ——
-  // 一个用户一个 json，覆盖写，不依赖删除权限
+  // 存储策略没有 update 权限，同路径写第二次会 400，所以改成"每次追加一个新文件，读最新一个"
   async function saveProfile(user) {
-    if (!user || !user.id) return;
+    if (!user || !user.id) return null;
     const me = window.Profile.of(user);
-    await putJson('social/profiles/' + user.id + '.json', {
+    const stamp = Date.now();
+    const name = stamp + '-' + Math.random().toString(36).slice(2, 8) + '.json';
+    const res = await putJson('social/profiles/' + user.id + '/' + name, {
       name: me.name,
       avatar: me.avatar || '',
-      at: new Date().toISOString()
+      at: new Date(stamp).toISOString()
     });
+    return res && res.error ? res.error : null;
   }
 
   async function getProfile(uid) {
-    const rec = await readJson('social/profiles/' + uid + '.json');
-    if (rec && rec.name) return rec;
-    // 兼容早期的目录写法
+    // 新写法：目录里按文件名（时间戳）倒序取最新
     const dir = 'social/profiles/' + uid;
     const files = await ls(dir);
-    if (!files.length) return { name: '某人', avatar: '' };
-    const old = await readJson(dir + '/' + files[0].name);
-    return old || { name: '某人', avatar: '' };
+    for (const f of files.slice(0, 3)) {
+      const rec = await readJson(dir + '/' + f.name);
+      if (rec && rec.name) return rec;
+    }
+    // 兼容早期的单文件写法
+    const single = await readJson('social/profiles/' + uid + '.json');
+    if (single && single.name) return single;
+    return { name: '某人', avatar: '' };
   }
 
   // —— 关注 ——
