@@ -23,7 +23,10 @@
           <textarea id="ne-body" rows="8" placeholder="写点什么……"></textarea>
           <div class="tool-row">
             <button class="primary" id="ne-save">保存</button>
+            <button type="button" id="ne-bold" title="加粗">B</button>
+            <button type="button" id="ne-italic" title="斜体"><em>I</em></button>
             <button type="button" id="ne-emoji">😀 表情</button>
+            <button type="button" id="ne-pic">🖼 图片</button>
             <span class="meta" id="ne-msg"></span>
           </div>
         </div>
@@ -59,7 +62,7 @@
     async function draw() {
       const { data, error } = await window.sb
         .from(TABLE)
-        .select('id,title,content,published,created_at,updated_at')
+        .select('id,user_id,title,content,published,created_at,updated_at')
         .order('created_at', { ascending: false });
       if (error) {
         listBox.innerHTML = '<div class="meta">读不到笔记：' + esc(error.message) + '（表建了吗？）</div>';
@@ -100,6 +103,21 @@
     }
 
     if (window.EmojiPicker) window.EmojiPicker.attach(document.querySelector('#ne-emoji'), bodyEl);
+    if (window.PicInserter) window.PicInserter.attach(document.querySelector('#ne-pic'), bodyEl, { maxMB: 25 });
+
+    // 加粗 / 斜体：把选中的字包起来，没选就插一对标记
+    const wrap = (mark) => {
+      const start = bodyEl.selectionStart;
+      const end = bodyEl.selectionEnd;
+      const value = bodyEl.value;
+      const chosen = value.slice(start, end);
+      bodyEl.value = value.slice(0, start) + mark + chosen + mark + value.slice(end);
+      bodyEl.focus();
+      if (chosen) bodyEl.setSelectionRange(start, end + mark.length * 2);
+      else bodyEl.setSelectionRange(start + mark.length, start + mark.length);
+    };
+    document.querySelector('#ne-bold').onclick = () => wrap('**');
+    document.querySelector('#ne-italic').onclick = () => wrap('*');
 
     document.querySelector('#ne-save').onclick = async () => {
       const title = titleEl.value.trim();
