@@ -45,6 +45,21 @@
         out.push('<h' + lv + '>' + inline(m[2]) + '</h' + lv + '>'); i++; continue;
       }
       if (/^(-{3,}|\*{3,}|_{3,})$/.test(line.trim())) { flushPara(); closeList(); out.push('<hr>'); i++; continue; }
+      // 表格：| a | b |  +  | --- | --- |
+      if (/^\s*\|.*\|\s*$/.test(line) && i + 1 < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i + 1])) {
+        flushPara(); closeList();
+        const cells = (s) => s.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => inline(c.trim()));
+        const head = cells(line);
+        i += 2;
+        const body = [];
+        while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) { body.push(cells(lines[i])); i++; }
+        out.push(
+          '<table><thead><tr>' + head.map((c) => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>' +
+          body.map((r) => '<tr>' + r.map((c) => '<td>' + c + '</td>').join('') + '</tr>').join('') +
+          '</tbody></table>'
+        );
+        continue;
+      }
       if ((m = line.match(/^>\s?(.*)$/))) {
         flushPara(); closeList();
         const buf = [m[1]];
