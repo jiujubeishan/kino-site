@@ -71,7 +71,7 @@
       list.innerHTML = ok.map((c) => `
         <article class="cm-item">
           <div class="cm-head">
-            <strong>${esc(c.author)}</strong>
+            <strong>${c.uid ? `<a href="#/user/${esc(c.uid)}">${esc(c.author)}</a>` : esc(c.author)}</strong>
             <span class="meta">${esc(new Date(c.at).toLocaleString('zh-CN'))}</span>
             ${myId && c.uid === myId ? '<button class="link" data-path="' + esc(c.path) + '">删</button>' : ''}
           </div>
