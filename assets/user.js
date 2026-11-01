@@ -3,6 +3,7 @@
   const esc = (s) => String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const MAX_MB = 25;
+  const OWNER_ID = 'c51a90d8-5a02-4ebe-9fe9-9515a960b8ea'; // 站长
 
   function html(uid) {
     return `
@@ -44,6 +45,12 @@
 
     const info = await window.Social.getProfile(uid);
     nameEl.textContent = info.name || '某人';
+    if (uid === OWNER_ID && !nameEl.parentNode.querySelector('.owner-badge')) {
+      const badge = document.createElement('span');
+      badge.className = 'owner-badge';
+      badge.textContent = '站长';
+      nameEl.append(badge);
+    }
     avatarEl.innerHTML = info.avatar ? `<img alt="" src="${esc(info.avatar)}">` : esc((info.name || '?')[0]);
 
     const [followers, following] = await Promise.all([
