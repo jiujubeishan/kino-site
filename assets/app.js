@@ -154,7 +154,7 @@
       <p class="lead">都在浏览器里跑，不上传、不联网。</p>
       <div class="grid" id="tool-grid">
         ${SiteTools.tools.map((t) => `
-          <section class="tool" data-tool="${t.id}">
+          <section class="tool${t.wide ? ' wide' : ''}" data-tool="${t.id}">
             <h3>${esc(t.title)}</h3>
             <div class="meta">${esc(t.desc)}</div>
           </section>`).join('')}
