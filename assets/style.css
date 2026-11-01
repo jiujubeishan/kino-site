@@ -228,3 +228,6 @@ button.link:hover{color:#c0392b}
 .sticker-btn img{width:100%; height:100%; object-fit:cover; display:block}
 .sticker-btn:hover{border-color:var(--accent)}
 @media (max-width:520px){.emoji-pop{width:min(320px, 88vw)}}
+#my-notes{margin-bottom:28px}
+#note-editor h2{margin-top:0}
+.cm-body img{max-width:180px; border-radius:8px; vertical-align:middle}
