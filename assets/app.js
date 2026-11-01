@@ -182,6 +182,9 @@
     else if (parts[0] === 'play') html = Play.html();
     else if (parts[0] === 'wall') html = Wall.html();
     else if (parts[0] === 'u') html = await userNote(parts[1] || '');
+    else if (parts[0] === 'user') html = UserPage.html(parts[1] || '');
+    else if (parts[0] === 'dm') html = DM.html(parts[1] || '');
+    else if (parts[0] === 'messages') html = DM.inboxHtml();
     else if (parts[0] === 'account') html = Account.html();
     else html = home();
 
@@ -194,6 +197,9 @@
     if (parts[0] === 'wall') Wall.mount();
     if (parts[0] === 'account') Account.mount();
     if (parts[0] === 'u' && window.Comments) Comments.mount();
+    if (parts[0] === 'user') UserPage.mount(parts[1] || '');
+    if (parts[0] === 'dm') DM.mount(parts[1] || '');
+    if (parts[0] === 'messages') DM.inboxMount();
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
     document.title = ({
       '': 'Kino 的自留地',
@@ -202,7 +208,10 @@
       play: '玩玩 · Kino 的自留地',
       wall: '墙墙 · Kino 的自留地',
       account: '我的 · Kino 的自留地',
-      u: '笔记 · Kino 的自留地'
+      u: '笔记 · Kino 的自留地',
+      user: '用户主页 · Kino 的自留地',
+      dm: '私信 · Kino 的自留地',
+      messages: '私信 · Kino 的自留地'
     })[parts[0] || ''] || (NOTE_TITLE(parts[1]) + ' · Kino 的自留地');
   }
 
