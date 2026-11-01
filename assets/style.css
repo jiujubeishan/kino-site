@@ -192,7 +192,10 @@ button.link:hover{color:#c0392b}
 .note-card:hover{transform:translateY(-2px); border-color:var(--accent)}
 .note-card h3{line-height:1.35}
 .note-card p{min-height:20px}
-.note-card .note-actions{padding:0 14px 10px; margin-top:auto; align-items:center}
+.note-card .note-foot{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:0 18px 12px; margin-top:auto}
+.note-card .note-foot .meta{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.note-card .note-actions{display:flex; align-items:center; gap:8px; padding:0; margin:0; flex:0 0 auto}
+.note-card .note-actions .link{padding:2px 4px}
 .note-card .note-actions .tag{font-size:11px}
 /* 墙墙：文件选择 + 文字贴 */
 .wall-post{margin-top:14px; padding-top:14px; border-top:1px dashed var(--line); display:flex; flex-direction:column; gap:8px}
