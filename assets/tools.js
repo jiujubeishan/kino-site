@@ -86,27 +86,6 @@
       }
     },
     {
-      id: 'dice',
-      title: '随机决定',
-      desc: '纠结的时候交给它。',
-      mount(box) {
-        const row = el('div', 'tool-row');
-        const input = el('input');
-        input.type = 'text';
-        input.value = '火锅, 烧烤, 面条, 随便';
-        input.style.flex = '1 1 220px';
-        const btn = el('button', 'primary', '抽一个');
-        const out = el('div', 'out');
-        row.append(input, btn);
-        box.append(row, out);
-        btn.onclick = () => {
-          const items = input.value.split(/[,，]/).map((s) => s.trim()).filter(Boolean);
-          if (!items.length) { out.textContent = '空的，抽不出来。'; return; }
-          out.textContent = '🎯 ' + items[Math.floor(Math.random() * items.length)];
-        };
-      }
-    },
-    {
       id: 'reaction',
       title: '反应力测试',
       desc: '点开始，等它变绿立刻点，看你这双手有多快。',
@@ -171,51 +150,98 @@
     },
     {
       id: 'keyboard',
+      wide: true,
       title: '键盘测试',
-      desc: '按一下看它认不认得。点这里再敲键。',
+      desc: '按下键盘上任意键，这里对应的键位会变绿。',
       mount(box) {
-        const pad = el('div', 'key-pad');
-        pad.tabIndex = 0;
-        const hint = el('div', 'meta', '点这里，然后随便敲个键');
-        const big = el('div', 'key-big mono', '—');
-        const info = el('div', 'meta', '还没按键');
-        const mods = el('div', 'meta', '');
-        const log = el('div', 'key-log');
-        pad.append(hint, big, info, mods);
-        const row = el('div', 'tool-row');
-        const clear = el('button', 'link', '清空');
-        row.append(clear);
-        box.append(pad, log, row);
+        const ROWS = [
+          [['Backquote','`'],['Digit1','1'],['Digit2','2'],['Digit3','3'],['Digit4','4'],['Digit5','5'],['Digit6','6'],['Digit7','7'],['Digit8','8'],['Digit9','9'],['Digit0','0'],['Minus','-'],['Equal','='],['Backspace','Bksp',2]],
+          [['Tab','Tab',1.5],['KeyQ','Q'],['KeyW','W'],['KeyE','E'],['KeyR','R'],['KeyT','T'],['KeyY','Y'],['KeyU','U'],['KeyI','I'],['KeyO','O'],['KeyP','P'],['BracketLeft','['],['BracketRight',']'],['Backslash','\\',1.5]],
+          [['CapsLock','Caps',1.8],['KeyA','A'],['KeyS','S'],['KeyD','D'],['KeyF','F'],['KeyG','G'],['KeyH','H'],['KeyJ','J'],['KeyK','K'],['KeyL','L'],['Semicolon',';'],['Quote',"'"],['Enter','Enter',2.2]],
+          [['ShiftLeft','Shift',2.4],['KeyZ','Z'],['KeyX','X'],['KeyC','C'],['KeyV','V'],['KeyB','B'],['KeyN','N'],['KeyM','M'],['Comma',','],['Period','.'],['Slash','/'],['ShiftRight','Shift',2.4]],
+          [['ControlLeft','Ctrl',1.4],['MetaLeft','Win',1.2],['AltLeft','Alt',1.2],['Space','Space',6],['AltRight','Alt',1.2],['MetaRight','Win',1.2],['ControlRight','Ctrl',1.4]]
+        ];
+
+        const head = el('div', 'kb-head');
+        const big = el('span', 'kb-big mono', '—');
+        const info = el('span', 'meta', '点一下键盘区域，然后敲键');
+        const mods = el('span', 'meta', '');
+        head.append(big, info, mods);
+
+        const kbd = el('div', 'kbd');
+        const map = new Map();
+        ROWS.forEach((row) => {
+          const line = el('div', 'kbd-row');
+          row.forEach(([code, label, w]) => {
+            const key = el('div', 'kbd-key', label);
+            key.dataset.code = code;
+            key.style.flex = String(w || 1);
+            map.set(code, key);
+            line.append(key);
+          });
+          kbd.append(line);
+        });
+        kbd.tabIndex = 0;
 
         const hist = [];
-        const draw = () => {
-          log.innerHTML = '';
-          hist.slice(-12).reverse().forEach((k) => {
-            const chip = el('span', 'key-chip mono', k.label);
-            if (k.chip.size) chip.style.width = Math.min(60, Math.max(24, k.chip.size)) + 'px';
-            log.append(chip);
-          });
-        };
+        const histBox = el('div', 'key-log');
+        box.append(head, kbd, histBox);
 
-        const onKey = (e) => {
-          e.preventDefault();
-          hint.remove();
-          const label = e.key === ' ' ? 'Space' : (e.key.length > 1 ? e.key : e.key.toUpperCase());
-          big.textContent = label;
-          info.textContent = 'key=' + JSON.stringify(e.key) + ' · code=' + (e.code || '—') + ' · keyCode=' + (e.keyCode || 0);
+        const paint = (on) => {
+          big.textContent = on.label;
+          big.classList.toggle('live', true);
+          info.textContent = on.code + '  ·  ' + on.info;
           const list = [];
-          if (e.ctrlKey) list.push('Ctrl');
-          if (e.shiftKey) list.push('Shift');
-          if (e.altKey) list.push('Alt');
-          if (e.metaKey) list.push('Meta');
-          mods.textContent = list.length ? '按住：' + list.join(' + ') : '没有修饰键';
-          hist.push({ label, chip: { size: Math.round(big.getBoundingClientRect().width) } });
-          draw();
+          if (on.ctrlKey) list.push('Ctrl');
+          if (on.shiftKey) list.push('Shift');
+          if (on.altKey) list.push('Alt');
+          if (on.metaKey) list.push('Meta');
+          mods.textContent = list.length ? '按住 ' + list.join(' + ') : '';
         };
 
-        pad.addEventListener('keydown', onKey);
-        clear.onclick = () => { hist.length = 0; draw(); big.textContent = '—'; info.textContent = '还没按键'; mods.textContent = ''; if (!hint.isConnected) pad.prepend(hint); };
-        box.addEventListener('unmount', () => pad.removeEventListener('keydown', onKey));
+        const onDown = (e) => {
+          e.preventDefault();
+          const keyEl = map.get(e.code);
+          if (keyEl) keyEl.classList.add('on');
+          paint({
+            label: e.key === ' ' ? 'Space' : (e.key.length > 1 ? e.key : e.key.toUpperCase()),
+            code: e.code || '—',
+            info: 'key=' + (e.key === ' ' ? 'Space' : e.key),
+            ctrlKey: e.ctrlKey, shiftKey: e.shiftKey, altKey: e.altKey, metaKey: e.metaKey
+          });
+          const chip = el('span', 'key-chip mono', e.code || e.key);
+          histBox.append(chip);
+          hist.push(chip);
+          while (hist.length > 14) { const old = hist.shift(); old.remove(); }
+        };
+
+        const onUp = (e) => {
+          const keyEl = map.get(e.code);
+          if (keyEl) keyEl.classList.remove('on');
+        };
+
+        const reset = () => {
+          map.forEach((k) => k.classList.remove('on'));
+          big.textContent = '—';
+          big.classList.remove('live');
+          info.textContent = '点一下键盘区域，然后敲键';
+          mods.textContent = '';
+          hist.forEach((c) => c.remove());
+          hist.length = 0;
+        };
+
+        kbd.addEventListener('keydown', onDown);
+        kbd.addEventListener('keyup', onUp);
+        kbd.onclick = () => kbd.focus();
+        const clearBtn = el('button', 'link', '清空');
+        clearBtn.onclick = reset;
+        const row = el('div', 'tool-row');
+        row.append(clearBtn);
+        box.append(row);
+        box.addEventListener('unmount', () => {
+          kbd.removeEventListener('keydown', onDown);
+          kbd.removeEventListener('keyup', onUp);
+        });
       }
     },    {
       id: 'slot',
