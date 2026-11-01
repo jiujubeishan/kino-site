@@ -121,9 +121,10 @@
     return `
       <a class="back" href="#/notes">← 返回列表</a>
       <article class="note-body">
+        <h1>${esc(meta.title)}</h1>
+        <p class="meta">${meta.date} · ${meta.tags.join(' / ')}</p>
         ${body}
       </article>
-      <p style="margin-top:36px"><a class="back" href="#/notes">← 回笔记列表</a></p>
     `;
   }
 
