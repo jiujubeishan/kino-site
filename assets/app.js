@@ -1,9 +1,7 @@
 /* 站点逻辑：哈希路由 + 笔记清单。加笔记 = 在 NOTES 里加一条 + 放一个 md 文件。 */
 (function () {
   const NOTES = [
-    { slug: 'hello', title: '为什么又开了一个站', date: '2026-10-31', tags: ['随笔'], desc: '第一篇文章，说说这块地要种什么。' },
-    { slug: 'tools', title: '工具槽位怎么加', date: '2026-10-31', tags: ['折腾'], desc: '两分钟加一个自己的小工具。' },
-    { slug: 'stack', title: '这套东西是怎么跑起来的', date: '2026-10-31', tags: ['折腾', '备忘'], desc: '零依赖静态站，改完即上线。' }
+    { slug: 'fish', title: '大肥鱼的自我介绍', date: '2026-11-01', tags: ['站内文章'], desc: '一条 DeepSeek 味的鱼：我在干什么、我不太行什么。' }
   ];
 
   const app = document.getElementById('app');
@@ -40,7 +38,7 @@
   async function mountHome() {
     const grid = document.querySelector('#home-grid');
     if (!grid) return;
-    let items = staticItems();
+    let items = [];
     if (window.sb) {
       try {
         const { data } = await window.sb
@@ -60,12 +58,14 @@
             ts: d.getTime()
           });
         });
-      } catch (e) { /* 没配置也不影响静态文章 */ }
+      } catch (e) { /* 没配置就当没写过 */ }
     }
     items = items.map((it) => ({ ...it, ts: it.ts || new Date(it.date).getTime() }))
       .sort((a, b) => b.ts - a.ts)
       .slice(0, 6);
-    grid.innerHTML = items.map(card).join('');
+    grid.innerHTML = items.length
+      ? items.map(card).join('')
+      : '<div class="meta">还没人写。要不你去<a href="#/notes">笔记页</a>写一篇？</div>';
   }
 
   function home() {
@@ -74,7 +74,11 @@
       <p class="lead">写点东西、放点小工具的自留地。慢慢长，不着急。</p>
       <h2>最近写的</h2>
       <div class="grid" id="home-grid">
-        ${staticItems().slice(0, 3).map(card).join('')}
+        <div class="meta">读取中…</div>
+      </div>
+      <h2>站内文章</h2>
+      <div class="grid">
+        ${staticItems().map(card).join('')}
       </div>
       <h2>顺手能用的</h2>
       <div class="grid">
