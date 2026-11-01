@@ -170,6 +170,54 @@
       }
     },
     {
+      id: 'keyboard',
+      title: '键盘测试',
+      desc: '按一下看它认不认得。点这里再敲键。',
+      mount(box) {
+        const pad = el('div', 'key-pad');
+        pad.tabIndex = 0;
+        const hint = el('div', 'meta', '点这里，然后随便敲个键');
+        const big = el('div', 'key-big mono', '—');
+        const info = el('div', 'meta', '还没按键');
+        const mods = el('div', 'meta', '');
+        const log = el('div', 'key-log');
+        pad.append(hint, big, info, mods);
+        const row = el('div', 'tool-row');
+        const clear = el('button', 'link', '清空');
+        row.append(clear);
+        box.append(pad, log, row);
+
+        const hist = [];
+        const draw = () => {
+          log.innerHTML = '';
+          hist.slice(-12).reverse().forEach((k) => {
+            const chip = el('span', 'key-chip mono', k.label);
+            if (k.chip.size) chip.style.width = Math.min(60, Math.max(24, k.chip.size)) + 'px';
+            log.append(chip);
+          });
+        };
+
+        const onKey = (e) => {
+          e.preventDefault();
+          hint.remove();
+          const label = e.key === ' ' ? 'Space' : (e.key.length > 1 ? e.key : e.key.toUpperCase());
+          big.textContent = label;
+          info.textContent = 'key=' + JSON.stringify(e.key) + ' · code=' + (e.code || '—') + ' · keyCode=' + (e.keyCode || 0);
+          const list = [];
+          if (e.ctrlKey) list.push('Ctrl');
+          if (e.shiftKey) list.push('Shift');
+          if (e.altKey) list.push('Alt');
+          if (e.metaKey) list.push('Meta');
+          mods.textContent = list.length ? '按住：' + list.join(' + ') : '没有修饰键';
+          hist.push({ label, chip: { size: Math.round(big.getBoundingClientRect().width) } });
+          draw();
+        };
+
+        pad.addEventListener('keydown', onKey);
+        clear.onclick = () => { hist.length = 0; draw(); big.textContent = '—'; info.textContent = '还没按键'; mods.textContent = ''; if (!hint.isConnected) pad.prepend(hint); };
+        box.addEventListener('unmount', () => pad.removeEventListener('keydown', onKey));
+      }
+    },    {
       id: 'slot',
       title: '+ 新工具槽位',
       desc: '想加什么写进 assets/tools.js，这里就多一张卡。',
