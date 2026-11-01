@@ -113,7 +113,13 @@
     const u = session.user;
     const since = u.created_at ? new Date(u.created_at).toLocaleDateString('zh-CN') : '—';
     const me = window.Profile.of(u);
-    if (window.Social) window.Social.saveProfile(u);
+    if (window.Social) {
+      window.Social.getProfile(u.id).then((pub) => {
+        if (!pub || pub.name !== me.name || (me.avatar || '') !== (pub.avatar || '')) {
+          window.Social.saveProfile(u);
+        }
+      }).catch(() => {});
+    }
     box.innerHTML = `
       <section class="card auth-card">
         <div class="who">
