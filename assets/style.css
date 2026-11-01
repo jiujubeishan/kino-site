@@ -296,3 +296,66 @@ button.link:hover{color:#c0392b}
 .note-body th, .note-body td{border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top}
 .note-body th{background:var(--accent-soft); font-weight:600}
 .note-body tr:nth-child(even) td{background:rgba(0,0,0,0.015)}
+/* ---------- 动画 ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(10px)}to{opacity:1; transform:none}}
+@keyframes pop{from{opacity:0; transform:scale(.94)}to{opacity:1; transform:scale(1)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+
+/* 页面进入：整块淡入上浮，子元素依次出现 */
+#app > *{animation:rise .42s cubic-bezier(.2,.7,.3,1) both}
+#app > *:nth-child(2){animation-delay:.04s}
+#app > *:nth-child(3){animation-delay:.08s}
+#app > *:nth-child(4){animation-delay:.12s}
+#app > *:nth-child(5){animation-delay:.16s}
+#app > *:nth-child(n+6){animation-delay:.2s}
+
+/* 卡片网格：逐个浮上来 */
+.grid > *{animation:rise .45s cubic-bezier(.2,.7,.3,1) both}
+.grid > *:nth-child(1){animation-delay:.05s}
+.grid > *:nth-child(2){animation-delay:.1s}
+.grid > *:nth-child(3){animation-delay:.15s}
+.grid > *:nth-child(4){animation-delay:.2s}
+.grid > *:nth-child(5){animation-delay:.25s}
+.grid > *:nth-child(n+6){animation-delay:.3s}
+
+/* 卡片悬停：抬起 + 阴影 + 标题变色 */
+.card{transition:transform .22s cubic-bezier(.2,.7,.3,1), box-shadow .22s ease, border-color .22s ease}
+.card:hover{transform:translateY(-3px); box-shadow:0 10px 26px -18px rgba(0,0,0,.45)}
+.card:hover h3{color:var(--accent)}
+.card h3{transition:color .18s ease}
+
+/* 导航：下划线滑动 */
+.site-head nav a{position:relative; transition:opacity .18s ease}
+.site-head nav a::after{content:''; position:absolute; left:0; right:0; bottom:-4px; height:2px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform .24s ease}
+.site-head nav a:hover::after{transform:scaleX(1)}
+
+/* 按钮：按下回弹 */
+button{transition:transform .12s ease, background-color .18s ease, border-color .18s ease, opacity .18s ease}
+button:active{transform:scale(.96)}
+
+/* 头像：悬停轻轻转一下 */
+.avatar{transition:transform .3s cubic-bezier(.2,.7,.3,1)}
+.user-hero:hover .avatar, .who:hover .avatar-btn{transform:rotate(-4deg) scale(1.03)}
+
+/* 图片墙/图集：淡入 + 悬停放大 */
+.gallery img, .files img, .stickers img{transition:transform .25s cubic-bezier(.2,.7,.3,1)}
+.gallery img:hover, .files img:hover, .stickers img:hover{transform:scale(1.04)}
+
+/* 弹层：缩放淡入 */
+.emoji-pop, .lightbox{animation:pop .18s ease both}
+.lightbox img{animation:pop .22s cubic-bezier(.2,.7,.3,1) both}
+.lightbox{animation:fade .16s ease both}
+
+/* 表单提示/消息：出现时淡入 */
+.out, .meta#ne-msg, #pf-msg, #cm-msg, .wall-post + .out{animation:fade .25s ease both}
+
+/* 站长标签：微微呼吸 */
+.owner-badge{animation:floaty 3.2s ease-in-out infinite}
+
+/* 尊重系统「减少动态效果」 */
+@media (prefers-reduced-motion: reduce){
+  #app > *, .grid > *, .emoji-pop, .lightbox, .lightbox img, .out, .owner-badge{animation:none !important}
+  .card, .avatar, button, .gallery img, .files img, .stickers img{transition:none !important}
+  .card:hover{transform:none}
+}
