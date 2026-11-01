@@ -115,7 +115,7 @@
           del.textContent = '删';
           del.onclick = async (e) => {
             e.stopPropagation();
-            const err = await window.Social.removeGalleryImage([it.path]);
+            const err = await window.Social.hideGalleryImage(uid, it.name);
             if (err) { msg.textContent = '删不掉：' + err.message; return; }
             drawGallery();
           };
