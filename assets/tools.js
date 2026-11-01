@@ -107,6 +107,69 @@
       }
     },
     {
+      id: 'reaction',
+      title: '反应力测试',
+      desc: '点开始，等它变绿立刻点，看你这双手有多快。',
+      mount(box) {
+        const KEY = 'site.reaction';
+        const best = () => Number(localStorage.getItem(KEY) || 0) || 0;
+        const pad = el('div', 'reaction-pad', '点一下开始');
+        const meta = el('div', 'meta', '');
+        const out = el('div', 'out', '');
+        box.append(pad, meta, out);
+
+        let state = 'idle'; // idle | waiting | ready
+        let t0 = 0;
+        let timer = null;
+        let tries = 0;
+
+        const showMeta = (last) => {
+          const b = best();
+          meta.textContent = '最好 ' + (b ? b + ' ms' : '—') + ' · 这次 ' + tries + ' 轮';
+          if (last) out.textContent = last;
+        };
+        showMeta('');
+
+        const toIdle = (text) => {
+          clearTimeout(timer);
+          state = 'idle';
+          pad.className = 'reaction-pad';
+          pad.textContent = text || '点一下再来';
+        };
+
+        pad.onclick = () => {
+          if (state === 'ready') {
+            const ms = Date.now() - t0;
+            const b = best();
+            if (!b || ms < b) localStorage.setItem(KEY, String(ms));
+            tries += 1;
+            toIdle();
+            showMeta('⚡ ' + ms + ' ms' + (!b || ms < b ? '（新纪录）' : ''));
+            return;
+          }
+          if (state === 'waiting') {
+            toIdle();
+            out.textContent = '抢跑了，等它变绿再点。';
+            return;
+          }
+          // 开始新一轮
+          state = 'waiting';
+          pad.className = 'reaction-pad waiting';
+          pad.textContent = '等它变绿…';
+          out.textContent = '';
+          timer = setTimeout(() => {
+            if (state !== 'waiting') return;
+            state = 'ready';
+            t0 = Date.now();
+            pad.className = 'reaction-pad ready';
+            pad.textContent = '点！';
+          }, 1200 + Math.random() * 2300);
+        };
+
+        box.addEventListener('unmount', () => clearTimeout(timer));
+      }
+    },
+    {
       id: 'slot',
       title: '+ 新工具槽位',
       desc: '想加什么写进 assets/tools.js，这里就多一张卡。',
