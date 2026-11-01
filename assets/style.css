@@ -291,3 +291,8 @@ button.link:hover{color:#c0392b}
 @media (max-width:560px){ .tool.wide{grid-column:span 1} .kbd-key{height:30px; font-size:11px} }
 /* 站长标签 */
 .owner-badge{display:inline-block; margin-left:8px; padding:1px 8px; border-radius:999px; background:var(--accent); color:#fff; font-size:12px; line-height:18px; vertical-align:middle; font-weight:500}
+/* 文章里的表格 */
+.note-body table{width:100%; border-collapse:collapse; margin:18px 0; font-size:14px}
+.note-body th, .note-body td{border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top}
+.note-body th{background:var(--accent-soft); font-weight:600}
+.note-body tr:nth-child(even) td{background:rgba(0,0,0,0.015)}
