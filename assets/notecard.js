@@ -26,15 +26,23 @@
    */
   function card(note, opts) {
     opts = opts || {};
-    const meta = [note.author || '', fmt(note.created_at)].filter(Boolean).join(' · ');
+    const when = fmt(note.created_at);
+    const author = note.author
+      ? (note.user_id
+        ? `<a href="#/user/${esc(note.user_id)}">${esc(note.author)}</a>`
+        : esc(note.author))
+      : '';
+    const meta = [author, when].filter(Boolean).join(' · ');
     return `
       <article class="card note-card" data-note-id="${esc(note.id)}">
         <a class="card-link" href="#/u/${esc(note.id)}">
           <h3>${esc(note.title || '无标题')}</h3>
-          <div class="meta">${esc(meta)}</div>
           <p>${esc(plain(note.content, 70))}</p>
         </a>
-        ${opts.actions ? '<div class="tool-row note-actions">' + opts.actions + '</div>' : ''}
+        <div class="note-foot">
+          <div class="meta">${meta}</div>
+          ${opts.actions ? '<div class="tool-row note-actions">' + opts.actions + '</div>' : ''}
+        </div>
       </article>`;
   }
 
