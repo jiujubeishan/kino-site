@@ -275,3 +275,14 @@ button.link:hover{color:#c0392b}
 .key-big{font-size:30px; font-weight:600; line-height:1.2; margin-bottom:6px; overflow-wrap:anywhere}
 .key-log{display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 0; min-height:26px}
 .key-chip{border:1px solid var(--line); border-radius:6px; padding:2px 6px; font-size:12px; text-align:center}
+/* 键盘测试：两格宽 + 主键盘区 */
+.tool.wide{grid-column:span 2}
+.kb-head{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; margin-bottom:10px}
+.kb-big{font-size:22px; font-weight:600; min-width:36px; color:var(--accent)}
+.kbd{display:flex; flex-direction:column; gap:6px; padding:10px; border:1px dashed var(--line); border-radius:12px; background:var(--accent-soft, #f7f3ee); outline:none}
+.kbd:focus-within{border-color:var(--accent); background:var(--card)}
+.kbd-row{display:flex; gap:6px}
+.kbd-key{flex:1; min-width:0; height:36px; display:flex; align-items:center; justify-content:center; font-size:12px; border:1px solid var(--line); border-radius:7px; background:var(--card); color:inherit; user-select:none; transition:background .08s, color .08s, border-color .08s, transform .08s}
+.kbd-key.on{background:#41ba41; border-color:#41ba41; color:#fff; transform:translateY(1px)}
+.key-log{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; min-height:22px}
+@media (max-width:560px){ .tool.wide{grid-column:span 1} .kbd-key{height:30px; font-size:11px} }
