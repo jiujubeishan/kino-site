@@ -29,6 +29,7 @@
           <textarea id="wall-text" rows="4" placeholder="也可以只写字，直接贴在墙上……"></textarea>
           <div class="tool-row">
             <button class="primary" id="wall-post">发到墙上</button>
+            <button type="button" id="wall-emoji">😀 表情</button>
             <span class="meta" id="wall-post-msg"></span>
           </div>
         </div>
@@ -187,6 +188,8 @@
       e.target.value = '';
       draw();
     };
+
+    if (window.EmojiPicker) window.EmojiPicker.attach(document.querySelector('#wall-emoji'), textEl);
 
     if (postBtn) {
       postBtn.onclick = async () => {
