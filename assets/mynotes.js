@@ -18,6 +18,7 @@
           <textarea id="ne-body" rows="8" placeholder="写点什么……"></textarea>
           <div class="tool-row">
             <button class="primary" id="ne-save">保存</button>
+            <button type="button" id="ne-emoji">😀 表情</button>
             <span class="meta" id="ne-msg"></span>
           </div>
         </div>
@@ -96,6 +97,8 @@
         }
       };
     }
+
+    if (window.EmojiPicker) window.EmojiPicker.attach(document.querySelector('#ne-emoji'), bodyEl);
 
     document.querySelector('#ne-save').onclick = async () => {
       const title = titleEl.value.trim();
