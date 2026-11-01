@@ -37,7 +37,7 @@
     if (!list || !window.sb) return;
     const user = await me();
     const profile = await window.Social.getProfile(peerId);
-    document.querySelector('#dm-name').textContent = profile.name || '某人';
+    document.querySelector('#dm-name').innerHTML = '<a href="#/user/' + esc(peerId) + '">' + esc(profile.name || '某人') + '</a>';
     document.querySelector('#dm-avatar').innerHTML = profile.avatar
       ? `<img alt="" src="${esc(profile.avatar)}">`
       : esc((profile.name || '?')[0]);
